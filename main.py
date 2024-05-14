@@ -26,7 +26,7 @@ def crypt(msg_key, table_key, text, encrypt=True):
     out = ""
     text = text.upper()
     alphabet_set = set(eng_alphabet)
-    keystream = mk_keystream(msg_key, len(text)).upper()
+    keystream = mk_keystream(msg_key, len([char for char in text if char in alphabet_set])).upper()
     keystream_index = 0
     for char in text:
         if char not in alphabet_set:
@@ -190,5 +190,41 @@ class VigenereTable:
                 print(''.join(val.values()))
 
 
+def main():
+    def table_key_entry():
+        table_key = input("PLEASE ENTER A KEY FOR THE VIGENERE TABLE\n")
+        while not check_key(table_key):
+            print("ONLY ENGLISH LETTERS ARE ALLOWED!")
+            table_key = input("PLEASE ENTER A VALID KEY! \n")
+        return table_key
+
+    menu = ("\n WHAT DO YOU WANT TO DO? \n \n 1. ENCRYPT A MESSAGE \n 2. DECRYPT A MESSAGE \n 3. SEE THE VIGENERE TABLE "
+            "\n 4. SEE THE INVERSE VIGENERE TABLE \n 5. CHANGE THE TABLE KEY \n 6. EXIT \n")
+
+    print("WELCOME TO MY VIGENERE CIPHERING PROGRAM")
+    table_key = table_key_entry()
+    while True:
+        match input(menu):
+            case "1":  # encrypt message
+                msg = input("PLEASE ENTER THE MESSAGE TO ENCRYPT:\n")
+                key = input("NOW PLEASE ENTER A KEY OF YOUR CHOICE:\n")
+                print(f"THE FOLLOWING CIPHERTEXT WAS GENERATED:\n {crypt(key, table_key, msg)} \n")
+            case "2":  # decrypt message
+                msg = input("PLEASE ENTER THE CIPHERTEXT TO DECRYPT:\n")
+                key = input("NOW PLEASE ENTER THE CORRESPONDING KEY:\n")
+                print(f"THE FOLLOWING MESSAGE WAS DECIPHERED:\n {crypt(key, table_key, msg, False)} \n")
+            case "3":  # print table
+                VigenereTable(table_key).print_table()
+            case "4":  # print inverse table
+                VigenereTable(table_key).print_table(inverse=True)
+            case "5":  # change table key
+                table_key = table_key_entry()
+            case "6":  # exit
+                print("BYE BYE!")
+                break
+            case _:
+                print("PLEASE SELECT A VALID INPUT!")
+
+
 if __name__ == '__main__':
-    print(crypt("hidden", "kryptos", "QKNEVW SKJJMSZ", False))
+    main()
