@@ -1,3 +1,4 @@
+from re import sub
 from string import ascii_uppercase as eng_aplhabet
 
 def encrypt(msg_key, table_key, plain_text):
@@ -21,32 +22,33 @@ def check_key(key):
     """
     return set(key.upper()) <= set(eng_aplhabet)
 
-def check_repeating_letters(key):
-    """
-    Checks if a keyword contains letters multiple times.
-
-    :param key: keyword to be checked
-    :type key: String
-
-    :return: Returns True if it does.
-    :rtype: bool
-    """
-    for char in key:
-        if key.count(char) > 1: return True
-    return False
-
 class VigenereTable:
 
     def __init__(self, key):
-        self.__key = key
+        try:
+            if check_key(key):
+                self.__key = key.upper()
+            else:
+                raise ValueError("Keyword not valid for Vigenere Table")
+        except ValueError:
+            self.__key = ""
         self.__alphabet = self.__key_alphabet(self.__key)
         self.__table = self.__mk_table(self.__alphabet)
 
+    def __str__(self):
+        return f"Vigenere Table Object (key hidden)"
+
     def __key_alphabet(self, key):
-        pass
+        alphabet = sub(key, "", eng_aplhabet)
+        key = list(key)
+        alphabet = list(alphabet)
+        return key + alphabet
 
     def __mk_table(self, alphabet):
         pass
 
     def get_table(self):
         return self.__table
+
+    def print_table(self):
+        pass
