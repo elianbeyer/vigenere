@@ -1,14 +1,18 @@
 from re import sub
 from string import ascii_uppercase as eng_aplhabet
 
+
 def encrypt(msg_key, table_key, plain_text):
     pass
+
 
 def decrypt(msg_key, table_key, cipher_text):
     pass
 
+
 def mk_keystream(key, msg_len):
     pass
+
 
 def check_key(key):
     """
@@ -21,6 +25,7 @@ def check_key(key):
     :rtype: bool
     """
     return set(key.upper()) <= set(eng_aplhabet)
+
 
 class VigenereTable:
 
@@ -39,13 +44,58 @@ class VigenereTable:
         return f"Vigenere Table Object (key hidden)"
 
     def __key_alphabet(self, key):
+        """
+        Generates a "Keyed Alphabet" using a keyword and the english alphabet. Generation works as follows: Duplicate
+        Letters are removed from the keyword. Letters of the keyword are removed from the original alphabet. The keyword
+        is appended to the front of the alphabet.
+
+        :param key: keyword
+        :type key: String
+
+        :return: keyed alphabet
+        :rtype: List
+        """
         alphabet = sub(key, "", eng_aplhabet)
-        key = list(key)
+
+        def rm_dupes_str(str):
+            """
+            Removes duplicate Chars from a String.
+
+            :param str: Original String
+            :type str: String
+
+            :return: Reformatted String containing only unique Chars
+            :rtype: String
+            """
+            new = ""
+            for c in str:
+                if c not in new:
+                    new = new + c
+            return new
+
+        key = list(rm_dupes_str(key))
         alphabet = list(alphabet)
         return key + alphabet
 
     def __mk_table(self, alphabet):
-        pass
+        """
+        Creates a vigenere table.
+
+        :param alphabet: Alphabet used to create table
+        :type alphabet: List
+
+        :return: vigenere table
+        :rtype: dict{ String: dict{ String: String } }
+        """
+        keys = alphabet.copy()
+
+        def shift_elms(lst, n):
+            n = n % len(lst)
+            return lst[n:] + lst[:n]
+
+        high_lvl = {}  # high-level dictionary, 1-lvl nested dictionary
+        for e, key in enumerate(keys):
+            high_lvl[key] = dict(zip(keys, shift_elms(alphabet, e)))
 
     def get_table(self):
         return self.__table
