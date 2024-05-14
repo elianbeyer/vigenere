@@ -1,18 +1,49 @@
 from re import sub
-from string import ascii_uppercase as eng_aplhabet
+from string import ascii_uppercase as eng_alphabet
 
 
-def encrypt(msg_key, table_key, plain_text):
-    pass
+def crypt(msg_key, table_key, text):
+    """
+    En-/Decrypts a text using the vigenere cypher.
 
+    :param msg_key: keyword
+    :type msg_key: String
+    :param table_key: keyword to make a keyed vigenere table
+    :type table_key: String
+    :param text: text to be en-/decrypted
+    :type text: String
 
-def decrypt(msg_key, table_key, cipher_text):
-    pass
+    :return: cipher-/plaintext
+    :rtype: String
+    """
+    table = VigenereTable(table_key)
+    out = ""
+    text = text.upper()
+    for k, v in dict(zip(list(mk_keystream(msg_key, len(text))), list(text))):
+        if k or v not in list(eng_alphabet):
+            continue
+        out = out + table.get_table()[k][v]
+
+    del table
+    return out
 
 
 def mk_keystream(key, msg_len):
-    pass
+    """
+    Repeats String key until it matches msg_len.
 
+    :param key: keyword
+    :type key: String
+    :param msg_len: Length
+    :type msg_len: int
+
+    :return: keystream
+    :rtype: String
+    """
+    key_len = len(key)
+    if key_len >= msg_len:
+        return key[:msg_len]
+    return (key * (msg_len%key_len+1))[:msg_len]
 
 def check_key(key):
     """
@@ -24,7 +55,7 @@ def check_key(key):
     :return: Returns True if there are only english letters.
     :rtype: bool
     """
-    return set(key.upper()) <= set(eng_aplhabet)
+    return set(key.upper()) <= set(eng_alphabet)
 
 
 class VigenereTable:
@@ -55,8 +86,7 @@ class VigenereTable:
         :return: keyed alphabet
         :rtype: List
         """
-        alphabet = sub(f"[{key}]", "", eng_aplhabet)
-
+        alphabet = sub(f"[{key}]", "", eng_alphabet)
 
         def rm_dupes_str(str):
             """
@@ -103,13 +133,23 @@ class VigenereTable:
         return high_lvl
 
     def get_table(self):
+        """
+        Returns the table attribute.
+
+        :return: vigenere table
+        :rtype: dict{ String: dict{ String: String } }
+        """
         return self.__table
 
     def print_table(self):
+        """
+        Pretty prints the table.
+
+        :return: None
+        """
         for _, val in self.__table.items():
             print(''.join(val.values()))
 
 
 if __name__ == '__main__':
-    V1 = VigenereTable("kryptos")
-    V1.print_table()
+    pass
