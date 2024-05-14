@@ -2,7 +2,7 @@ from re import sub
 from string import ascii_uppercase as eng_alphabet
 
 
-def crypt(msg_key, table_key, text):
+def crypt(msg_key, table_key, text, encrypt=True):
     """
     En-/Decrypts a text using the vigenere cypher.
 
@@ -12,19 +12,30 @@ def crypt(msg_key, table_key, text):
     :type table_key: String
     :param text: text to be en-/decrypted
     :type text: String
+    :param encrypt: True if encryption, False if decryption
+    :type encrypt: bool
 
     :return: cipher-/plaintext
     :rtype: String
     """
-    table = VigenereTable(table_key)
+    vtable = VigenereTable(table_key)
+    if encrypt:
+        table = vtable.get_table()
+    elif not encrypt:
+        table = vtable.get_inv_table()
     out = ""
     text = text.upper()
-    for k, v in dict(zip(list(mk_keystream(msg_key, len(text))), list(text))):
-        if k or v not in list(eng_alphabet):
-            continue
-        out = out + table.get_table()[k][v]
-
-    del table
+    alphabet_set = set(eng_alphabet)
+    keystream = mk_keystream(msg_key, len(text)).upper()
+    keystream_index = 0
+    for char in text:
+        if char not in alphabet_set:
+            out += char  # Keep non-alphabetic characters as is
+        else:
+            k = keystream[keystream_index]
+            out += table[k][char]
+            keystream_index += 1
+    del vtable
     return out
 
 
@@ -43,7 +54,8 @@ def mk_keystream(key, msg_len):
     key_len = len(key)
     if key_len >= msg_len:
         return key[:msg_len]
-    return (key * (msg_len%key_len+1))[:msg_len]
+    return (key * (msg_len % key_len + 1))[:msg_len]
+
 
 def check_key(key):
     """
@@ -70,6 +82,7 @@ class VigenereTable:
             self.__key = ""
         self.__alphabet = self.__key_alphabet(self.__key)
         self.__table = self.__mk_table(self.__alphabet)
+        self.__inv_table = self.__mk_inv_table()
 
     def __str__(self):
         return f"Vigenere Table Object (key hidden)"
@@ -126,11 +139,21 @@ class VigenereTable:
 
         high_lvl = {}  # 1-lvl nested dictionary
         for e, key in enumerate(keys):
-            print(e)
-            print(shift_elms(alphabet, e))
             high_lvl[key] = dict(zip(keys, shift_elms(alphabet, e)))
 
         return high_lvl
+
+    def __mk_inv_table(self):
+        """
+        Creates the inverse vigenere table.
+
+        :return: inverse vigenere table
+        :rtype: dict{ String: dict{ String: String } }
+        """
+        inv_table = {}
+        for key, low_lvl in self.__table.items():
+            inv_table[key] = {v: k for k, v in low_lvl.items()}
+        return inv_table
 
     def get_table(self):
         """
@@ -141,15 +164,31 @@ class VigenereTable:
         """
         return self.__table
 
-    def print_table(self):
+    def get_inv_table(self):
+        """
+        Returns the inv_table attribute.
+
+        :return: inverse vigenere table
+        :rtype: dict{ String: dict{ String: String } }
+        """
+        return self.__inv_table
+
+    def print_table(self, inverse=False):
         """
         Pretty prints the table.
 
+        :param inverse: False for normal table, True for inverse table
+        :type inverse: bool
+
         :return: None
         """
-        for _, val in self.__table.items():
-            print(''.join(val.values()))
+        if not inverse:
+            for _, val in self.__table.items():
+                print(''.join(val.values()))
+        if inverse:
+            for _, val in self.__inv_table.items():
+                print(''.join(val.values()))
 
 
 if __name__ == '__main__':
-    pass
+    print(crypt("hidden", "kryptos", "QKNEVW SKJJMSZ", False))
