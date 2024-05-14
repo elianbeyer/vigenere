@@ -55,7 +55,8 @@ class VigenereTable:
         :return: keyed alphabet
         :rtype: List
         """
-        alphabet = sub(key, "", eng_aplhabet)
+        alphabet = sub(f"[{key}]", "", eng_aplhabet)
+
 
         def rm_dupes_str(str):
             """
@@ -93,12 +94,22 @@ class VigenereTable:
             n = n % len(lst)
             return lst[n:] + lst[:n]
 
-        high_lvl = {}  # high-level dictionary, 1-lvl nested dictionary
+        high_lvl = {}  # 1-lvl nested dictionary
         for e, key in enumerate(keys):
+            print(e)
+            print(shift_elms(alphabet, e))
             high_lvl[key] = dict(zip(keys, shift_elms(alphabet, e)))
+
+        return high_lvl
 
     def get_table(self):
         return self.__table
 
     def print_table(self):
-        pass
+        for _, val in self.__table.items():
+            print(''.join(val.values()))
+
+
+if __name__ == '__main__':
+    V1 = VigenereTable("kryptos")
+    V1.print_table()
