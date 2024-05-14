@@ -9,6 +9,32 @@ def decrypt(msg_key, table_key, cipher_text):
 def mk_keystream(key, msg_len):
     pass
 
+def check_key(key):
+    """
+    Checks if a keyword only contains letters of the english alphabet.
+
+    :param key: keyword to be checked
+    :type key: String
+
+    :return: Returns True if there are only english letters.
+    :rtype: bool
+    """
+    return set(key.upper()) <= set(eng_aplhabet)
+
+def check_repeating_letters(key):
+    """
+    Checks if a keyword contains letters multiple times.
+
+    :param key: keyword to be checked
+    :type key: String
+
+    :return: Returns True if it does.
+    :rtype: bool
+    """
+    for char in key:
+        if key.count(char) > 1: return True
+    return False
+
 class VigenereTable:
 
     def __init__(self, key):
