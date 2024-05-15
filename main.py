@@ -54,7 +54,7 @@ def mk_keystream(key, msg_len):
     key_len = len(key)
     if key_len >= msg_len:
         return key[:msg_len]
-    return (key * (msg_len % key_len + 1))[:msg_len]
+    return (key * ((msg_len // key_len) + 1))[:msg_len]
 
 
 def check_key(key):
